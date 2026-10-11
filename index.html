@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<meta name="description" content="Color original WESS Heroes coloring pages in your browser.">
+<title>WESS Heroes Coloring Studio</title>
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+:root{color-scheme:dark;--bg:#0b1020;--panel:#141c30;--line:#29354d;--ink:#f4f7ff;--muted:#aab6ce;--accent:#ffcf42;--blue:#60a5fa}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,#0b1020,#121b32);color:var(--ink);font:16px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{padding:18px 16px 12px;position:sticky;top:0;background:#0b1020ed;backdrop-filter:blur(10px);z-index:5;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px}.logo{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:var(--accent);color:#141414;font-size:25px;font-weight:900}
+h1{font-size:20px;margin:0}header p{margin:4px 0 0;color:var(--muted);font-size:13px}
+main{max-width:900px;margin:auto;padding:14px;display:grid;gap:14px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:14px}
+h2{font-size:16px;margin:0 0 10px}.gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.hero{border:1px solid #394762;background:#0d1425;color:var(--ink);border-radius:13px;padding:8px;min-width:0;text-align:center;font:inherit;cursor:pointer}
+.hero[aria-pressed=true]{outline:2px solid var(--accent);border-color:var(--accent)}.thumb{width:100%;aspect-ratio:1.1;display:grid;place-items:center;background:#f8fafc;border-radius:9px;margin-bottom:7px;overflow:hidden}.thumb svg{width:100%;height:100%}.hero span{font-size:12px;font-weight:700}
+.workspace{display:grid;gap:12px}.canvas-wrap{background:#fff;border-radius:12px;overflow:hidden;touch-action:none;position:relative;min-height:220px}.canvas-wrap canvas{display:block;width:100%;height:auto;touch-action:none;cursor:crosshair}
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.tools label{font-size:12px;color:var(--muted);display:grid;gap:5px}.tools input[type=color]{width:45px;height:40px;padding:3px;border:1px solid var(--line);background:#0d1425;border-radius:10px}.tools input[type=range]{width:110px}.btn{border:1px solid #40506e;background:#202b43;color:var(--ink);padding:10px 12px;border-radius:11px;font:600 13px system-ui;cursor:pointer}.btn.primary{background:var(--accent);color:#1b1b1b;border-color:var(--accent)}.btn.active{outline:2px solid var(--accent)}.btn:disabled{opacity:.4}.note{font-size:12px;color:var(--muted);margin:9px 0 0}.cta{display:block;text-align:center;text-decoration:none;background:var(--accent);color:#191919;font-weight:800;padding:13px;border-radius:12px}.small{font-size:12px;color:var(--muted)}footer{text-align:center;color:var(--muted);font-size:12px;padding:0 18px 28px}
+@media(min-width:720px){main{grid-template-columns:270px minmax(0,1fr);align-items:start}.gallery{grid-template-columns:1fr}.hero{display:flex;align-items:center;gap:10px;text-align:left}.thumb{width:76px;flex:none;margin:0}.workspace{min-width:0}}
+</style>
+</head>
+<body>
+<header><div class="brand"><div class="logo">W</div><div><h1>WESS Heroes Coloring Studio</h1><p>Pick a hero. Choose a color. Make it yours.</p></div></div></header>
+<main>
+<section class="panel"><h2>Choose your coloring page</h2><div class="gallery" id="gallery"></div><p class="note">Starter artwork is original placeholder line art. Replace it with your approved WESS pages when ready.</p></section>
+<section class="panel workspace">
+<div><h2 id="pageTitle">Robodude</h2><div class="small">Color with your finger or mouse. Pinch zoom is handled by your browser.</div></div>
+<div class="canvas-wrap"><canvas id="art" width="800" height="900" aria-label="Coloring canvas"></canvas></div>
+<div class="tools">
+<label>Color<input id="color" type="color" value="#ff4545" aria-label="Brush color"></label>
+<label>Brush size <span id="sizeText">18 px</span><input id="size" type="range" min="3" max="60" value="18"></label>
+<button class="btn active" id="brush">🖌 Brush</button><button class="btn" id="eraser">⌫ Eraser</button>
+<button class="btn" id="undo">↶ Undo</button><button class="btn" id="reset">⟲ Reset</button>
+<button class="btn primary" id="save">⬇ Save PNG</button>
+</div>
+<p class="note">Tip: color inside the outlines. Undo works for recent strokes. Reset clears your coloring for the current page.</p>
+<a class="cta" id="premium" href="https://payhip.com/" target="_blank" rel="noopener">Explore Premium Coloring Packs</a>
+<p class="note">Demo store link: replace this with your actual Payhip product or store URL before publishing.</p>
+</section>
+</main>
+<footer>WESS Heroes Coloring Studio • Prototype • Artwork and features may be updated as the collection grows.</footer>
+<script>
+const NS='http://www.w3.org/2000/svg';
+function svgWrap(inner){return `<svg xmlns="${NS}" viewBox="0 0 800 900"><rect width="800" height="900" fill="white"/>${inner}</svg>`}
+const stroke='stroke="#171717" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"';
+function robot(name,accent,kind){
+ let body=`<g fill="white" ${stroke}>
+ <path d="M310 245 Q400 210 490 245 L520 350 Q505 400 470 405 L330 405 Q295 400 280 350 Z"/>
+ <rect x="290" y="405" width="220" height="210" rx="35"/>
+ <path d="M315 615 L295 750 L370 750 L395 640 M485 615 L505 750 L430 750 L405 640"/>
+ <path d="M290 435 L220 500 L250 555 L320 500 M510 435 L580 500 L550 555 L480 500"/>
+ <rect x="345" y="625" width="110" height="30" rx="12"/>
+ <path d="M350 270 L350 315 M450 270 L450 315"/>
+ <rect x="325" y="285" width="150" height="85" rx="20"/>
+ <circle cx="365" cy="325" r="15" fill="${accent}"/><circle cx="435" cy="325" r="15" fill="${accent}"/>
+ <path d="M370 355 Q400 370 430 355"/>
+ <path d="M400 285 L400 230 M370 230 L430 230"/>
+ <path d="M320 470 L480 470 M340 510 L460 510 M355 550 L445 550"/>
+ </g>`;
+ if(kind==='lady') body=body.replace('<path d="M400 285 L400 230 M370 230 L430 230"/>','<path d="M400 285 L400 230 M370 230 L430 230"/><path d="M300 250 Q260 200 300 170 Q340 145 370 190 M500 250 Q540 200 500 170 Q460 145 430 190" fill="white"/>');
+ if(kind==='deletor') body=body.replace('<path d="M350 470 L450 470"/>','<path d="M350 470 L450 470"/>');
+ return svgWrap(`<text x="400" y="90" font-family="Arial,sans-serif" font-size="42" font-weight="bold" text-anchor="middle" fill="#111">${name.toUpperCase()}</text><path d="M130 790 Q400 740 670 790" fill="none" stroke="#bbb" stroke-width="5"/>${body}<text x="400" y="850" font-family="Arial,sans-serif" font-size="24" text-anchor="middle" fill="#777">WESS HEROES • COLORING PAGE</text>`);
+}
+const pages=[
+ {name:'Robodude',svg:robot('Robodude','#ff4545','robot')},
+ {name:'Lady Robot',svg:robot('Lady Robot','#ff70ad','lady')},
+ {name:'Deletor',svg:robot('Deletor','#ef4444','deletor')}
+];
+const gallery=document.getElementById('gallery'),canvas=document.getElementById('art'),ctx=canvas.getContext('2d');
+let current=0, strokes=[], redoStack=[], drawing=false, last=null, mode='brush', baseImage=new Image();
+function loadPage(index){current=index;strokes=[];redoStack=[];document.getElementById('pageTitle').textContent=pages[index].name;[...gallery.children].forEach((b,i)=>b.setAttribute('aria-pressed',String(i===index)));let blob=new Blob([pages[index].svg],{type:'image/svg+xml'});let url=URL.createObjectURL(blob);baseImage.onload=()=>{URL.revokeObjectURL(url);render()};baseImage.src=url}
+pages.forEach((p,i)=>{let b=document.createElement('button');b.className='hero';b.setAttribute('aria-pressed',String(i===0));b.innerHTML=`<div class="thumb">${p.svg}</div><span>${p.name}</span>`;b.addEventListener('click',()=>loadPage(i));gallery.appendChild(b)});
+function render(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);if(baseImage.complete)ctx.drawImage(baseImage,0,0,canvas.width,canvas.height);for(const s of strokes){ctx.save();ctx.globalCompositeOperation=s.mode==='eraser'?'destination-out':'source-over';ctx.strokeStyle=s.color;ctx.lineWidth=s.size;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();s.points.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));if(s.points.length===1){ctx.lineTo(s.points[0].x+.1,s.points[0].y+.1)}ctx.stroke();ctx.restore()}}
+function point(e){const r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)*canvas.width/r.width,y:(e.clientY-r.top)*canvas.height/r.height}}
+canvas.addEventListener('pointerdown',e=>{e.preventDefault();canvas.setPointerCapture(e.pointerId);drawing=true;last=point(e);strokes.push({color:document.getElementById('color').value,size:+document.getElementById('size').value,mode,points:[last]});redoStack=[];render()});
+canvas.addEventListener('pointermove',e=>{if(!drawing)return;e.preventDefault();let p=point(e),s=strokes[strokes.length-1];s.points.push(p);last=p;render()});
+function stop(){drawing=false;last=null}canvas.addEventListener('pointerup',stop);canvas.addEventListener('pointercancel',stop);
+document.getElementById('size').addEventListener('input',e=>document.getElementById('sizeText').textContent=e.target.value+' px');
+document.getElementById('brush').onclick=()=>{mode='brush';document.getElementById('brush').classList.add('active');document.getElementById('eraser').classList.remove('active')};
+document.getElementById('eraser').onclick=()=>{mode='eraser';document.getElementById('eraser').classList.add('active');document.getElementById('brush').classList.remove('active')};
+document.getElementById('undo').onclick=()=>{if(strokes.length)redoStack.push(strokes.pop());render()};
+document.getElementById('reset').onclick=()=>{if(confirm('Clear all coloring on this page?')){strokes=[];redoStack=[];render()}};
+document.getElementById('save').onclick=()=>{let a=document.createElement('a');a.download='WESS-'+pages[current].name.replace(/\s+/g,'-')+'-coloring.png';a.href=canvas.toDataURL('image/png');a.click()};
+document.getElementById('premium').href='https://payhip.com/';
+loadPage(0);
+if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+</script>
+</body></html>

@@ -1,0 +1,10 @@
+{
+  "name": "WESS Heroes Coloring Studio",
+  "short_name": "WESS Coloring",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0b1020",
+  "theme_color": "#111827",
+  "description": "Color WESS Heroes pages on your phone.",
+  "icons": []
+}
