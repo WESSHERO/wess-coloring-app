@@ -64,11 +64,20 @@ function robot(name,accent,kind){
  if(kind==='deletor') body=body.replace('<path d="M350 470 L450 470"/>','<path d="M350 470 L450 470"/>');
  return svgWrap(`<text x="400" y="90" font-family="Arial,sans-serif" font-size="42" font-weight="bold" text-anchor="middle" fill="#111">${name.toUpperCase()}</text><path d="M130 790 Q400 740 670 790" fill="none" stroke="#bbb" stroke-width="5"/>${body}<text x="400" y="850" font-family="Arial,sans-serif" font-size="24" text-anchor="middle" fill="#777">WESS HEROES • COLORING PAGE</text>`);
 }
+
 const pages=[
- {name:'Robodude',svg:robot('Robodude','#ff4545','robot')},
- {name:'Lady Robot',svg:robot('Lady Robot','#ff70ad','lady')},
- {name:'Deletor',svg:robot('Deletor','#ef4444','deletor')}
+{name:'Book 3 Bonus',src:'book3-bonus.png'},
+{name:'Deletor Game Designer',src:'deletor-game-designer.png'},
+{name:'Hotguy Army',src:'hotguy-army.png'},
+{name:'Hotguy Firefighter',src:'hotguy-firefighter.png'},
+{name:'Hotguy Pizza Delivery',src:'hotguy-pizza-delivery.png'},
+{name:'Hotguy Robodude Construction',src:'hotguy-robodude-construction.png'},
+{name:'Hotguy Rocket Rescue',src:'hotguy-rocket-rescue.png'},
+{name:'Lady Robot Dentist',src:'ladyrobot-dentist.png'},
+{name:'Robodude Doctor',src:'robodude-doctor.png'},
+{name:'Robodude Mechanic',src:'robodude-mechanic.png'}
 ];
+
 const gallery=document.getElementById('gallery'),canvas=document.getElementById('art'),ctx=canvas.getContext('2d');
 let current=0, strokes=[], redoStack=[], drawing=false, last=null, mode='brush', baseImage=new Image();
 function loadPage(index){current=index;strokes=[];redoStack=[];document.getElementById('pageTitle').textContent=pages[index].name;[...gallery.children].forEach((b,i)=>b.setAttribute('aria-pressed',String(i===index)));let blob=new Blob([pages[index].svg],{type:'image/svg+xml'});let url=URL.createObjectURL(blob);baseImage.onload=()=>{URL.revokeObjectURL(url);render()};baseImage.src=url}
